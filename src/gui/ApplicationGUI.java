@@ -7,6 +7,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.nio.file.*;
 
 /**
  * Represente l'interface graphique de l'application
@@ -17,6 +18,7 @@ public class ApplicationGUI {
 
     /** Le fichier actuellement selectionne */
     private static File imageSelectionnee;
+    private static String path = null;
 
     /**
      * Point d'entree principal de l'application
@@ -39,11 +41,33 @@ public class ApplicationGUI {
         JPanel panneauPrincipal = new JPanel(new BorderLayout());
         fenetre.add(panneauPrincipal);
 
+        JPanel afficheImage = new JPanel();
+        afficheImage.setPreferredSize(new Dimension(250, 100));
+        panneauPrincipal.add(afficheImage, BorderLayout.EAST);
+
         // Création du bouton "Parcourir"
         JButton boutonParcourir = new JButton("Parcourir");
         boutonParcourir.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 imageSelectionnee = afficherExplorateurFichiers();
+            }
+        });
+
+        // Création du bouton "Afficher Image"
+        JButton afficherImage = new JButton("Afficher Image");
+        afficherImage.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (path != null) {
+                    ImageIcon icon = new ImageIcon(path);
+                    JLabel miniature = new JLabel(icon);
+                    afficheImage.add(miniature);
+                    afficheImage.revalidate();
+                    afficheImage.repaint();
+
+                } else {
+                    System.out.println("Selectionnez une Image !");
+                }
+
             }
         });
 
@@ -53,6 +77,7 @@ public class ApplicationGUI {
 
         JPanel panneauBoutons = new JPanel(new FlowLayout(FlowLayout.CENTER));
         panneauBoutons.add(boutonParcourir);
+        panneauBoutons.add(afficherImage);
         panneauBoutons.add(afficherStatistiquesRep);
         panneauBoutons.add(afficherStatistiquesImageSelect);
         panneauBoutons.add(extraireMetaImageSelect);
@@ -72,9 +97,11 @@ public class ApplicationGUI {
         int resultat = explorateurFichiers.showOpenDialog(null);
 
         if (resultat == JFileChooser.APPROVE_OPTION) {
-            return explorateurFichiers.getSelectedFile();
+            // return explorateurFichiers.getSelectedFile();
+            imageSelectionnee = explorateurFichiers.getSelectedFile();
+            path = imageSelectionnee.getPath();
         }
-        return null;
+        return imageSelectionnee;
 
     }
 
